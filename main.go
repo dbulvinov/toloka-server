@@ -27,6 +27,9 @@ func main() {
 	// Автомиграция
 	db.AutoMigrate(&models.User{}, &models.Event{}, &models.Inventory{}, &models.EventInventory{}, &models.EventPhoto{}, &models.EventParticipant{}, &models.ParticipantInventory{}, &models.EventPhotoPost{}, &models.Rating{}, &models.UserRatingSummary{}, &models.Complaint{}, &models.Subscription{}, &models.Community{}, &models.CommunityRole{}, &models.News{}, &models.Comment{}, &models.NewsLike{}, &models.Achievement{}, &models.UserAchievement{}, &models.UserLevel{}, &models.PinnedPost{}, &models.Conversation{}, &models.Message{}, &models.Attachment{}, &models.Block{}, &models.UserPresence{})
 
+	// Создание системного пользователя
+	initSystemUser(db)
+
 	// Инициализация базового инвентаря
 	initDefaultInventory(db)
 
@@ -50,13 +53,13 @@ func main() {
 
 	// Middleware
 	app.Use(logger.New())
-	
+
 	// CORS настройки
 	corsOrigins := os.Getenv("CORS_ORIGINS")
 	if corsOrigins == "" {
 		corsOrigins = "http://localhost:3000,http://127.0.0.1:3000,http://10.0.2.2:8080,http://192.168.0.191:8080"
 	}
-	
+
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     corsOrigins,
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
@@ -128,30 +131,58 @@ func main() {
 	log.Fatal(app.Listen(":" + port))
 }
 
+// initSystemUser создает системного пользователя
+func initSystemUser(db *gorm.DB) {
+	var systemUser models.User
+	result := db.Where("email = ?", "system@toloka.local").First(&systemUser)
+	if result.Error != nil {
+		// Создаем системного пользователя
+		systemUser = models.User{
+			Name:         "System",
+			Email:        "system@toloka.local",
+			PasswordHash: "system", // Не используется для системного пользователя
+			IsActive:     true,
+			IsPublic:     false,
+		}
+		if err := db.Create(&systemUser).Error; err != nil {
+			log.Printf("Ошибка при создании системного пользователя: %v", err)
+		} else {
+			log.Println("Системный пользователь создан")
+		}
+	}
+}
+
 // initDefaultInventory инициализирует базовый инвентарь в системе
 func initDefaultInventory(db *gorm.DB) {
+	// Получаем ID системного пользователя
+	var systemUser models.User
+	if err := db.Where("email = ?", "system@toloka.local").First(&systemUser).Error; err != nil {
+		log.Printf("Системный пользователь не найден: %v", err)
+		return
+	}
+
 	// Список базового инвентаря для волонтерских мероприятий
 	defaultInventory := []models.Inventory{
-		{Name: "Перчатки рабочие", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Мешки для мусора", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Грабли", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Лопата", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Ведро", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Веник", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Совок", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Щетка", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Средство для мытья", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Тряпки", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Аптечка", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Вода питьевая", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Снеки", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Куртка защитная", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Сапоги резиновые", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Фонарик", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Радио", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Знаки безопасности", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Конусы", IsCustom: false, CreatedBy: 0, IsActive: true},
-		{Name: "Лента оградительная", IsCustom: false, CreatedBy: 0, IsActive: true},
+		{Name: "Перчатки рабочие", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Мешки для мусора", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Грабли", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Лопата", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Ведро", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Веник", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Совок", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Щетка", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Средство для мытья", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Тряпки", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Аптечка", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Вода питьевая", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Снеки", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Куртка защитная", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Сапоги резиновые", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Фонарик", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Радио", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Знаки безопасности", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Конусы", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
+		{Name: "Лента оградительная", IsCustom: false, CreatedBy: systemUser.ID, IsActive: true},
 	}
 
 	// Проверяем, есть ли уже инвентарь в базе

@@ -17,7 +17,7 @@ type Inventory struct {
 	UpdatedAt time.Time `json:"updated_at"`
 
 	// Связи
-	Creator User `json:"creator" gorm:"foreignKey:CreatedBy"`
+	Creator *User `json:"creator" gorm:"foreignKey:CreatedBy"`
 }
 
 // BeforeCreate хук для установки времени создания
