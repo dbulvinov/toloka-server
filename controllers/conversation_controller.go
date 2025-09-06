@@ -54,6 +54,8 @@ func (c *ConversationController) GetConversations(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(fiber.Map{
+		"success":       true,
+		"message":       "Conversations retrieved successfully",
 		"conversations": conversations,
 		"limit":         limit,
 		"offset":        offset,
@@ -86,8 +88,10 @@ func (c *ConversationController) GetConversation(ctx *fiber.Ctx) error {
 	unreadCount, _ := c.conversationService.GetUnreadCount(conversation.ID, userID)
 
 	return ctx.JSON(fiber.Map{
-		"conversation": conversation,
-		"unread_count": unreadCount,
+		"success":       true,
+		"message":       "Conversation retrieved successfully",
+		"conversation":  conversation,
+		"unread_count":  unreadCount,
 	})
 }
 
@@ -124,6 +128,8 @@ func (c *ConversationController) CreateConversation(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(201).JSON(fiber.Map{
+		"success":     true,
+		"message":     "Conversation created successfully",
 		"conversation": conversation,
 	})
 }

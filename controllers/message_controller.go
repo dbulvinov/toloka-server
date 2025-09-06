@@ -56,6 +56,8 @@ func (c *MessageController) GetMessages(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(fiber.Map{
+		"success":  true,
+		"message":  "Messages retrieved successfully",
 		"messages": messages,
 		"limit":    limit,
 		"before":   beforeID,
@@ -85,7 +87,56 @@ func (c *MessageController) GetMessage(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.JSON(fiber.Map{
-		"message": message,
+		"success": true,
+		"message": "Message retrieved successfully",
+		"data":    message,
+	})
+}
+
+// SendMessage отправляет сообщение в диалог
+func (c *MessageController) SendMessage(ctx *fiber.Ctx) error {
+	userID := ctx.Locals("user_id").(uint)
+	conversationID, err := strconv.ParseUint(ctx.Params("conversation_id"), 10, 32)
+	if err != nil {
+		return ctx.Status(400).JSON(fiber.Map{
+			"error": "Invalid conversation ID",
+		})
+	}
+
+	var request struct {
+		ToUserID uint   `json:"to_user_id" validate:"required"`
+		Text     string `json:"text" validate:"required"`
+		TempID   string `json:"temp_id"`
+	}
+
+	if err := ctx.BodyParser(&request); err != nil {
+		return ctx.Status(400).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	message, err := c.messageService.CreateMessage(
+		uint(conversationID),
+		userID,
+		request.ToUserID,
+		request.Text,
+		request.TempID,
+	)
+	if err != nil {
+		if err.Error() == "user is blocked" {
+			return ctx.Status(403).JSON(fiber.Map{
+				"error": "User is blocked",
+			})
+		}
+		return ctx.Status(500).JSON(fiber.Map{
+			"error": "Failed to send message",
+		})
+	}
+
+	return ctx.Status(201).JSON(fiber.Map{
+		"success": true,
+		"message": "Message sent successfully",
+		"data":    message,
 	})
 }
 

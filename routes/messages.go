@@ -39,6 +39,9 @@ func SetupMessageRoutes(app *fiber.App, db *gorm.DB) {
 	// GET /api/conversations/:conversation_id/messages - получить сообщения диалога
 	conversationMessages.Get("/", messageController.GetMessages)
 
+	// POST /api/conversations/:conversation_id/messages - отправить сообщение
+	conversationMessages.Post("/", messageController.SendMessage)
+
 	// PUT /api/conversations/:conversation_id/messages/read - пометить все сообщения диалога как прочитанные
 	conversationMessages.Put("/read", messageController.MarkConversationAsRead)
 }
