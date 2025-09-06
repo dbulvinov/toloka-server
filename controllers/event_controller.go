@@ -24,17 +24,29 @@ func NewEventController(db *gorm.DB) *EventController {
 
 // CreateEventRequest структура запроса создания ивента
 type CreateEventRequest struct {
-	Title           string                  `json:"title" validate:"required,min=3,max=255"`
-	Description     string                  `json:"description" validate:"max=2000"`
-	Latitude        float64                 `json:"latitude" validate:"required,min=-90,max=90"`
-	Longitude       float64                 `json:"longitude" validate:"required,min=-180,max=180"`
-	StartTime       string                  `json:"start_time" validate:"required"`
-	EndTime         string                  `json:"end_time" validate:"required"`
-	JoinMode        string                  `json:"join_mode" validate:"required,oneof=free approval"`
-	MinParticipants int                     `json:"min_participants" validate:"min=1"`
-	MaxParticipants int                     `json:"max_participants" validate:"min=1"`
-	Inventory       []EventInventoryRequest `json:"inventory"`
-	Photos          []string                `json:"photos"`
+	Title            string                  `json:"title" validate:"required,min=3,max=255"`
+	Description      string                  `json:"description" validate:"max=2000"`
+	Latitude         float64                 `json:"latitude" validate:"required,min=-90,max=90"`
+	Longitude        float64                 `json:"longitude" validate:"required,min=-180,max=180"`
+	LocationName     string                  `json:"location_name" validate:"max=255"`
+	Address          string                  `json:"address" validate:"max=500"`
+	City             string                  `json:"city" validate:"max=100"`
+	StartTime        string                  `json:"start_time" validate:"required"`
+	EndTime          string                  `json:"end_time" validate:"required"`
+	JoinMode         string                  `json:"join_mode" validate:"required,oneof=free approval"`
+	MinParticipants  int                     `json:"min_participants" validate:"min=1"`
+	MaxParticipants  int                     `json:"max_participants" validate:"min=1"`
+	EventType        string                  `json:"event_type" validate:"oneof=environmental social educational charity sports culture health technology"`
+	Difficulty       string                  `json:"difficulty" validate:"oneof=easy medium hard"`
+	WeatherDependent bool                    `json:"weather_dependent"`
+	Requirements     string                  `json:"requirements" validate:"max=1000"`
+	WhatToBring      string                  `json:"what_to_bring" validate:"max=1000"`
+	ContactInfo      string                  `json:"contact_info" validate:"max=500"`
+	IsPublic         bool                    `json:"is_public"`
+	IsRecurring      bool                    `json:"is_recurring"`
+	RecurringPattern string                  `json:"recurring_pattern" validate:"oneof=daily weekly monthly yearly"`
+	Inventory        []EventInventoryRequest `json:"inventory"`
+	Photos           []string                `json:"photos"`
 }
 
 // EventInventoryRequest структура запроса инвентаря для ивента
@@ -46,17 +58,29 @@ type EventInventoryRequest struct {
 
 // UpdateEventRequest структура запроса обновления ивента
 type UpdateEventRequest struct {
-	Title           string                  `json:"title" validate:"min=3,max=255"`
-	Description     string                  `json:"description" validate:"max=2000"`
-	Latitude        float64                 `json:"latitude" validate:"min=-90,max=90"`
-	Longitude       float64                 `json:"longitude" validate:"min=-180,max=180"`
-	StartTime       string                  `json:"start_time"`
-	EndTime         string                  `json:"end_time"`
-	JoinMode        string                  `json:"join_mode" validate:"oneof=free approval"`
-	MinParticipants int                     `json:"min_participants" validate:"min=1"`
-	MaxParticipants int                     `json:"max_participants" validate:"min=1"`
-	Inventory       []EventInventoryRequest `json:"inventory"`
-	Photos          []string                `json:"photos"`
+	Title            string                  `json:"title" validate:"min=3,max=255"`
+	Description      string                  `json:"description" validate:"max=2000"`
+	Latitude         float64                 `json:"latitude" validate:"min=-90,max=90"`
+	Longitude        float64                 `json:"longitude" validate:"min=-180,max=180"`
+	LocationName     string                  `json:"location_name" validate:"max=255"`
+	Address          string                  `json:"address" validate:"max=500"`
+	City             string                  `json:"city" validate:"max=100"`
+	StartTime        string                  `json:"start_time"`
+	EndTime          string                  `json:"end_time"`
+	JoinMode         string                  `json:"join_mode" validate:"oneof=free approval"`
+	MinParticipants  int                     `json:"min_participants" validate:"min=1"`
+	MaxParticipants  int                     `json:"max_participants" validate:"min=1"`
+	EventType        string                  `json:"event_type" validate:"oneof=environmental social educational charity sports culture health technology"`
+	Difficulty       string                  `json:"difficulty" validate:"oneof=easy medium hard"`
+	WeatherDependent bool                    `json:"weather_dependent"`
+	Requirements     string                  `json:"requirements" validate:"max=1000"`
+	WhatToBring      string                  `json:"what_to_bring" validate:"max=1000"`
+	ContactInfo      string                  `json:"contact_info" validate:"max=500"`
+	IsPublic         bool                    `json:"is_public"`
+	IsRecurring      bool                    `json:"is_recurring"`
+	RecurringPattern string                  `json:"recurring_pattern" validate:"oneof=daily weekly monthly yearly"`
+	Inventory        []EventInventoryRequest `json:"inventory"`
+	Photos           []string                `json:"photos"`
 }
 
 // CreateInventoryRequest структура запроса создания инвентаря
@@ -163,17 +187,29 @@ func (ec *EventController) CreateEvent(c *fiber.Ctx) error {
 
 	// Создаем ивент
 	event := models.Event{
-		CreatorID:       userID,
-		Title:           req.Title,
-		Description:     req.Description,
-		Latitude:        req.Latitude,
-		Longitude:       req.Longitude,
-		StartTime:       startTime,
-		EndTime:         endTime,
-		JoinMode:        req.JoinMode,
-		MinParticipants: req.MinParticipants,
-		MaxParticipants: req.MaxParticipants,
-		IsActive:        true,
+		CreatorID:        userID,
+		Title:            req.Title,
+		Description:      req.Description,
+		Latitude:         req.Latitude,
+		Longitude:        req.Longitude,
+		LocationName:     req.LocationName,
+		Address:          req.Address,
+		City:             req.City,
+		StartTime:        startTime,
+		EndTime:          endTime,
+		JoinMode:         req.JoinMode,
+		MinParticipants:  req.MinParticipants,
+		MaxParticipants:  req.MaxParticipants,
+		EventType:        req.EventType,
+		Difficulty:       req.Difficulty,
+		WeatherDependent: req.WeatherDependent,
+		Requirements:     req.Requirements,
+		WhatToBring:      req.WhatToBring,
+		ContactInfo:      req.ContactInfo,
+		IsActive:         true,
+		IsPublic:         req.IsPublic,
+		IsRecurring:      req.IsRecurring,
+		RecurringPattern: req.RecurringPattern,
 	}
 
 	// Начинаем транзакцию
@@ -326,6 +362,15 @@ func (ec *EventController) UpdateEvent(c *fiber.Ctx) error {
 	if req.Longitude != 0 {
 		event.Longitude = req.Longitude
 	}
+	if req.LocationName != "" {
+		event.LocationName = req.LocationName
+	}
+	if req.Address != "" {
+		event.Address = req.Address
+	}
+	if req.City != "" {
+		event.City = req.City
+	}
 	if req.JoinMode != "" {
 		event.JoinMode = req.JoinMode
 	}
@@ -334,6 +379,27 @@ func (ec *EventController) UpdateEvent(c *fiber.Ctx) error {
 	}
 	if req.MaxParticipants > 0 {
 		event.MaxParticipants = req.MaxParticipants
+	}
+	if req.EventType != "" {
+		event.EventType = req.EventType
+	}
+	if req.Difficulty != "" {
+		event.Difficulty = req.Difficulty
+	}
+	event.WeatherDependent = req.WeatherDependent
+	if req.Requirements != "" {
+		event.Requirements = req.Requirements
+	}
+	if req.WhatToBring != "" {
+		event.WhatToBring = req.WhatToBring
+	}
+	if req.ContactInfo != "" {
+		event.ContactInfo = req.ContactInfo
+	}
+	event.IsPublic = req.IsPublic
+	event.IsRecurring = req.IsRecurring
+	if req.RecurringPattern != "" {
+		event.RecurringPattern = req.RecurringPattern
 	}
 
 	// Обновляем время, если предоставлено
@@ -762,6 +828,198 @@ func (ec *EventController) GetInventories(c *fiber.Ctx) error {
 		Success:     true,
 		Message:     "Список инвентаря получен",
 		Inventories: inventories,
+	})
+}
+
+// GetEventTypes получает список типов событий
+func (ec *EventController) GetEventTypes(c *fiber.Ctx) error {
+	eventTypes := models.GetEventTypes()
+	
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Типы событий получены",
+		"types":   eventTypes,
+	})
+}
+
+// GetDifficultyLevels получает список уровней сложности
+func (ec *EventController) GetDifficultyLevels(c *fiber.Ctx) error {
+	difficultyLevels := models.GetDifficultyLevels()
+	
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Уровни сложности получены",
+		"levels":  difficultyLevels,
+	})
+}
+
+// GetRecurringPatterns получает список паттернов повторения
+func (ec *EventController) GetRecurringPatterns(c *fiber.Ctx) error {
+	recurringPatterns := models.GetRecurringPatterns()
+	
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Паттерны повторения получены",
+		"patterns": recurringPatterns,
+	})
+}
+
+// EventJoinRequest структура запроса присоединения к событию
+type EventJoinRequest struct {
+	Message string `json:"message" validate:"max=500"` // Сообщение организатору (для режима approval)
+}
+
+// JoinEvent присоединяет пользователя к событию
+func (ec *EventController) JoinEvent(c *fiber.Ctx) error {
+	// Получаем пользователя из JWT токена
+	userID, err := ec.getUserIDFromToken(c)
+	if err != nil {
+		return c.Status(401).JSON(fiber.Map{
+			"success": false,
+			"message": "Неавторизованный доступ",
+		})
+	}
+
+	// Получаем ID события
+	eventID, err := strconv.ParseUint(c.Params("id"), 10, 32)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Неверный ID события",
+		})
+	}
+
+	// Проверяем существование события
+	var event models.Event
+	if err := ec.DB.First(&event, eventID).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"success": false,
+			"message": "Событие не найдено",
+		})
+	}
+
+	// Проверяем, что событие активно
+	if !event.IsActive {
+		return c.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Событие неактивно",
+		})
+	}
+
+	// Проверяем, что событие еще не началось
+	if time.Now().After(event.StartTime) {
+		return c.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Событие уже началось",
+		})
+	}
+
+	// Проверяем, не присоединился ли уже пользователь
+	var existingParticipant models.EventParticipant
+	if err := ec.DB.Where("event_id = ? AND user_id = ?", eventID, userID).First(&existingParticipant).Error; err == nil {
+		return c.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Вы уже присоединились к этому событию",
+		})
+	}
+
+	// Проверяем количество участников
+	var participantCount int64
+	ec.DB.Model(&models.EventParticipant{}).Where("event_id = ? AND status IN (?)", eventID, []string{"accepted", "joined"}).Count(&participantCount)
+	
+	if int(participantCount) >= event.MaxParticipants {
+		return c.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Событие заполнено",
+		})
+	}
+
+	var req EventJoinRequest
+	if err := c.BodyParser(&req); err != nil {
+		req = EventJoinRequest{} // Пустой запрос для режима free
+	}
+
+	// Определяем статус в зависимости от режима вступления
+	status := "joined"
+	if event.JoinMode == "approval" {
+		status = "pending"
+	}
+
+	// Создаем участника
+	participant := models.EventParticipant{
+		EventID: uint(eventID),
+		UserID:  userID,
+		Status:  status,
+	}
+
+	if status == "joined" {
+		now := time.Now()
+		participant.JoinedAt = &now
+	}
+
+	if err := ec.DB.Create(&participant).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"success": false,
+			"message": "Ошибка при присоединении к событию",
+		})
+	}
+
+	message := "Вы успешно присоединились к событию"
+	if status == "pending" {
+		message = "Заявка на участие отправлена. Ожидайте подтверждения от организатора"
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": message,
+		"participant": participant,
+	})
+}
+
+// LeaveEvent покидает событие
+func (ec *EventController) LeaveEvent(c *fiber.Ctx) error {
+	// Получаем пользователя из JWT токена
+	userID, err := ec.getUserIDFromToken(c)
+	if err != nil {
+		return c.Status(401).JSON(fiber.Map{
+			"success": false,
+			"message": "Неавторизованный доступ",
+		})
+	}
+
+	// Получаем ID события
+	eventID, err := strconv.ParseUint(c.Params("id"), 10, 32)
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Неверный ID события",
+		})
+	}
+
+	// Находим участника
+	var participant models.EventParticipant
+	if err := ec.DB.Where("event_id = ? AND user_id = ?", eventID, userID).First(&participant).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"success": false,
+			"message": "Вы не участвуете в этом событии",
+		})
+	}
+
+	// Обновляем статус
+	participant.Status = "left"
+	now := time.Now()
+	participant.LeftAt = &now
+
+	if err := ec.DB.Save(&participant).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"success": false,
+			"message": "Ошибка при выходе из события",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"message": "Вы покинули событие",
 	})
 }
 

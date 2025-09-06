@@ -36,8 +36,26 @@ func SetupEventRoutes(app *fiber.App, eventController *controllers.EventControll
 		})
 	})
 
+	// Группа маршрутов для метаданных событий (должна быть перед параметрическими маршрутами)
+	metadata := app.Group("/events/metadata")
+
+	// GET /events/metadata/types - получить типы событий
+	metadata.Get("/types", eventController.GetEventTypes)
+
+	// GET /events/metadata/difficulty - получить уровни сложности
+	metadata.Get("/difficulty", eventController.GetDifficultyLevels)
+
+	// GET /events/metadata/recurring - получить паттерны повторения
+	metadata.Get("/recurring", eventController.GetRecurringPatterns)
+
 	// GET /events/:id - получить детали ивента (публичный доступ)
 	events.Get("/:id", eventController.GetEvent)
+
+	// POST /events/:id/join - присоединиться к событию (требует авторизации)
+	events.Post("/:id/join", eventController.JoinEvent)
+
+	// POST /events/:id/leave - покинуть событие (требует авторизации)
+	events.Post("/:id/leave", eventController.LeaveEvent)
 
 	// Группа маршрутов для инвентаря
 	inventory := app.Group("/inventory")

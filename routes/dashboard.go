@@ -12,7 +12,9 @@ func SetupDashboardRoutes(app *fiber.App, dashboardController *controllers.Dashb
 
 	// Получение полных данных дашборда
 	api.Get("/", dashboardController.GetDashboardData)
-	
+
 	// Получение упрощенных данных дашборда для текущего пользователя
 	api.Get("/user", dashboardController.GetUserDashboard)
 }
+
+

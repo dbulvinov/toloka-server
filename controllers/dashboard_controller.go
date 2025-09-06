@@ -129,25 +129,25 @@ func (dc *DashboardController) GetDashboardData(c *fiber.Ctx) error {
 	// Формируем ответ
 	response := fiber.Map{
 		"user": fiber.Map{
-			"id":           user.ID,
-			"name":         user.Name,
-			"email":        user.Email,
-			"avatar":       user.Avatar,
-			"level":        userLevel.Level,
-			"points":       userLevel.Points,
-			"max_points":   userLevel.Level * 100,
-			"current_xp":   userLevel.Points - ((userLevel.Level - 1) * 100),
-			"max_xp":       100,
+			"id":         user.ID,
+			"name":       user.Name,
+			"email":      user.Email,
+			"avatar":     user.Avatar,
+			"level":      userLevel.Level,
+			"points":     userLevel.Points,
+			"max_points": userLevel.Level * 100,
+			"current_xp": userLevel.Points - ((userLevel.Level - 1) * 100),
+			"max_xp":     100,
 		},
-		"stats": userStats,
-		"upcoming_events": upcomingEvents,
-		"recommended_events": recommendedEvents,
+		"stats":               userStats,
+		"upcoming_events":     upcomingEvents,
+		"recommended_events":  recommendedEvents,
 		"recent_achievements": recentAchievements,
-		"leaderboard": leaderboard,
-		"community_stats": communityStats,
-		"today_events": todayEvents,
-		"error": false,
-		"message": "Данные дашборда получены успешно",
+		"leaderboard":         leaderboard,
+		"community_stats":     communityStats,
+		"today_events":        todayEvents,
+		"error":               false,
+		"message":             "Данные дашборда получены успешно",
 	}
 
 	return c.JSON(response)
@@ -212,7 +212,7 @@ func (dc *DashboardController) GetUserDashboard(c *fiber.Ctx) error {
 
 	dc.db.Model(&models.Subscription{}).Where("subscriber_id = ?", userID).Count(&feedStats.SubscriptionsCount)
 	dc.db.Model(&models.Event{}).Where("start_time > ? AND is_active = ?", now, true).Count(&feedStats.UpcomingEvents)
-	
+
 	startOfDay := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	endOfDay := startOfDay.AddDate(0, 0, 1)
 	dc.db.Model(&models.Event{}).Where("start_time >= ? AND start_time < ? AND is_active = ?", startOfDay, endOfDay, true).Count(&feedStats.TodayEvents)
@@ -220,21 +220,21 @@ func (dc *DashboardController) GetUserDashboard(c *fiber.Ctx) error {
 	// Формируем ответ
 	response := fiber.Map{
 		"user": fiber.Map{
-			"id":           user.ID,
-			"name":         user.Name,
-			"email":        user.Email,
-			"avatar":       user.Avatar,
-			"level":        userLevel.Level,
-			"points":       userLevel.Points,
-			"max_points":   userLevel.Level * 100,
-			"current_xp":   userLevel.Points - ((userLevel.Level - 1) * 100),
-			"max_xp":       100,
+			"id":         user.ID,
+			"name":       user.Name,
+			"email":      user.Email,
+			"avatar":     user.Avatar,
+			"level":      userLevel.Level,
+			"points":     userLevel.Points,
+			"max_points": userLevel.Level * 100,
+			"current_xp": userLevel.Points - ((userLevel.Level - 1) * 100),
+			"max_xp":     100,
 		},
-		"stats": userStats,
+		"stats":           userStats,
 		"upcoming_events": upcomingEvents,
-		"feed_stats": feedStats,
-		"error": false,
-		"message": "Данные дашборда получены успешно",
+		"feed_stats":      feedStats,
+		"error":           false,
+		"message":         "Данные дашборда получены успешно",
 	}
 
 	return c.JSON(response)

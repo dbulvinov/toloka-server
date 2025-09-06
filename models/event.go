@@ -14,12 +14,24 @@ type Event struct {
 	Description     string    `json:"description" gorm:"type:text"`
 	Latitude        float64   `json:"latitude" gorm:"not null"`
 	Longitude       float64   `json:"longitude" gorm:"not null"`
+	LocationName    string    `json:"location_name" gorm:"size:255"` // Название места
+	Address         string    `json:"address" gorm:"type:text"`      // Полный адрес
+	City            string    `json:"city" gorm:"size:100"`          // Город
 	StartTime       time.Time `json:"start_time" gorm:"not null"`
 	EndTime         time.Time `json:"end_time" gorm:"not null"`
 	JoinMode        string    `json:"join_mode" gorm:"not null;default:'free'"` // 'free' или 'approval'
 	MinParticipants int       `json:"min_participants" gorm:"default:1"`
 	MaxParticipants int       `json:"max_participants" gorm:"default:50"`
+	EventType       string    `json:"event_type" gorm:"size:50;default:'environmental'"` // Тип события
+	Difficulty      string    `json:"difficulty" gorm:"size:20;default:'easy'"`          // Сложность
+	WeatherDependent bool     `json:"weather_dependent" gorm:"default:false"`            // Зависит от погоды
+	Requirements    string    `json:"requirements" gorm:"type:text"`                     // Требования к участникам
+	WhatToBring     string    `json:"what_to_bring" gorm:"type:text"`                    // Что взять с собой
+	ContactInfo     string    `json:"contact_info" gorm:"type:text"`                     // Контактная информация
 	IsActive        bool      `json:"is_active" gorm:"default:true"`
+	IsPublic        bool      `json:"is_public" gorm:"default:true"`                     // Публичное событие
+	IsRecurring     bool      `json:"is_recurring" gorm:"default:false"`                 // Повторяющееся событие
+	RecurringPattern string   `json:"recurring_pattern" gorm:"size:50"`                  // Паттерн повторения
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 
@@ -175,6 +187,27 @@ const (
 	ComplaintReasonInappropriateContent = "inappropriate_content"
 	ComplaintReasonHarassment           = "harassment"
 	ComplaintReasonOther                = "other"
+
+	// Типы событий
+	EventTypeEnvironmental = "environmental"
+	EventTypeSocial        = "social"
+	EventTypeEducational   = "educational"
+	EventTypeCharity       = "charity"
+	EventTypeSports        = "sports"
+	EventTypeCulture       = "culture"
+	EventTypeHealth        = "health"
+	EventTypeTechnology    = "technology"
+
+	// Сложность событий
+	DifficultyEasy   = "easy"
+	DifficultyMedium = "medium"
+	DifficultyHard   = "hard"
+
+	// Паттерны повторения
+	RecurringPatternDaily   = "daily"
+	RecurringPatternWeekly  = "weekly"
+	RecurringPatternMonthly = "monthly"
+	RecurringPatternYearly  = "yearly"
 )
 
 // GetComplaintReasons возвращает список доступных причин жалоб
@@ -186,6 +219,39 @@ func GetComplaintReasons() map[string]string {
 		ComplaintReasonInappropriateContent: "Неподходящий контент",
 		ComplaintReasonHarassment:           "Притеснение",
 		ComplaintReasonOther:                "Другое",
+	}
+}
+
+// GetEventTypes возвращает список доступных типов событий
+func GetEventTypes() map[string]string {
+	return map[string]string{
+		EventTypeEnvironmental: "Экология",
+		EventTypeSocial:        "Социальное",
+		EventTypeEducational:   "Образование",
+		EventTypeCharity:       "Благотворительность",
+		EventTypeSports:        "Спорт",
+		EventTypeCulture:       "Культура",
+		EventTypeHealth:        "Здоровье",
+		EventTypeTechnology:    "Технологии",
+	}
+}
+
+// GetDifficultyLevels возвращает список доступных уровней сложности
+func GetDifficultyLevels() map[string]string {
+	return map[string]string{
+		DifficultyEasy:   "Легкая",
+		DifficultyMedium: "Средняя",
+		DifficultyHard:   "Сложная",
+	}
+}
+
+// GetRecurringPatterns возвращает список доступных паттернов повторения
+func GetRecurringPatterns() map[string]string {
+	return map[string]string{
+		RecurringPatternDaily:   "Ежедневно",
+		RecurringPatternWeekly:  "Еженедельно",
+		RecurringPatternMonthly: "Ежемесячно",
+		RecurringPatternYearly:  "Ежегодно",
 	}
 }
 
