@@ -834,7 +834,7 @@ func (ec *EventController) GetInventories(c *fiber.Ctx) error {
 // GetEventTypes получает список типов событий
 func (ec *EventController) GetEventTypes(c *fiber.Ctx) error {
 	eventTypes := models.GetEventTypes()
-	
+
 	return c.JSON(fiber.Map{
 		"success": true,
 		"message": "Типы событий получены",
@@ -845,7 +845,7 @@ func (ec *EventController) GetEventTypes(c *fiber.Ctx) error {
 // GetDifficultyLevels получает список уровней сложности
 func (ec *EventController) GetDifficultyLevels(c *fiber.Ctx) error {
 	difficultyLevels := models.GetDifficultyLevels()
-	
+
 	return c.JSON(fiber.Map{
 		"success": true,
 		"message": "Уровни сложности получены",
@@ -856,11 +856,22 @@ func (ec *EventController) GetDifficultyLevels(c *fiber.Ctx) error {
 // GetRecurringPatterns получает список паттернов повторения
 func (ec *EventController) GetRecurringPatterns(c *fiber.Ctx) error {
 	recurringPatterns := models.GetRecurringPatterns()
-	
+
+	return c.JSON(fiber.Map{
+		"success":  true,
+		"message":  "Паттерны повторения получены",
+		"patterns": recurringPatterns,
+	})
+}
+
+// GetJoinModes получает список режимов вступления
+func (ec *EventController) GetJoinModes(c *fiber.Ctx) error {
+	joinModes := models.GetJoinModes()
+
 	return c.JSON(fiber.Map{
 		"success": true,
-		"message": "Паттерны повторения получены",
-		"patterns": recurringPatterns,
+		"message": "Режимы вступления получены",
+		"modes":   joinModes,
 	})
 }
 
@@ -926,7 +937,7 @@ func (ec *EventController) JoinEvent(c *fiber.Ctx) error {
 	// Проверяем количество участников
 	var participantCount int64
 	ec.DB.Model(&models.EventParticipant{}).Where("event_id = ? AND status IN (?)", eventID, []string{"accepted", "joined"}).Count(&participantCount)
-	
+
 	if int(participantCount) >= event.MaxParticipants {
 		return c.Status(400).JSON(fiber.Map{
 			"success": false,
@@ -970,8 +981,8 @@ func (ec *EventController) JoinEvent(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"success": true,
-		"message": message,
+		"success":     true,
+		"message":     message,
 		"participant": participant,
 	})
 }

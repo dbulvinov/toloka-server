@@ -8,32 +8,32 @@ import (
 
 // Event представляет модель ивента в системе
 type Event struct {
-	ID              uint      `json:"id" gorm:"primaryKey"`
-	CreatorID       uint      `json:"creator_id" gorm:"not null"`
-	Title           string    `json:"title" gorm:"not null;size:255"`
-	Description     string    `json:"description" gorm:"type:text"`
-	Latitude        float64   `json:"latitude" gorm:"not null"`
-	Longitude       float64   `json:"longitude" gorm:"not null"`
-	LocationName    string    `json:"location_name" gorm:"size:255"` // Название места
-	Address         string    `json:"address" gorm:"type:text"`      // Полный адрес
-	City            string    `json:"city" gorm:"size:100"`          // Город
-	StartTime       time.Time `json:"start_time" gorm:"not null"`
-	EndTime         time.Time `json:"end_time" gorm:"not null"`
-	JoinMode        string    `json:"join_mode" gorm:"not null;default:'free'"` // 'free' или 'approval'
-	MinParticipants int       `json:"min_participants" gorm:"default:1"`
-	MaxParticipants int       `json:"max_participants" gorm:"default:50"`
-	EventType       string    `json:"event_type" gorm:"size:50;default:'environmental'"` // Тип события
-	Difficulty      string    `json:"difficulty" gorm:"size:20;default:'easy'"`          // Сложность
-	WeatherDependent bool     `json:"weather_dependent" gorm:"default:false"`            // Зависит от погоды
-	Requirements    string    `json:"requirements" gorm:"type:text"`                     // Требования к участникам
-	WhatToBring     string    `json:"what_to_bring" gorm:"type:text"`                    // Что взять с собой
-	ContactInfo     string    `json:"contact_info" gorm:"type:text"`                     // Контактная информация
-	IsActive        bool      `json:"is_active" gorm:"default:true"`
-	IsPublic        bool      `json:"is_public" gorm:"default:true"`                     // Публичное событие
-	IsRecurring     bool      `json:"is_recurring" gorm:"default:false"`                 // Повторяющееся событие
-	RecurringPattern string   `json:"recurring_pattern" gorm:"size:50"`                  // Паттерн повторения
-	CreatedAt       time.Time `json:"created_at"`
-	UpdatedAt       time.Time `json:"updated_at"`
+	ID               uint      `json:"id" gorm:"primaryKey"`
+	CreatorID        uint      `json:"creator_id" gorm:"not null"`
+	Title            string    `json:"title" gorm:"not null;size:255"`
+	Description      string    `json:"description" gorm:"type:text"`
+	Latitude         float64   `json:"latitude" gorm:"not null"`
+	Longitude        float64   `json:"longitude" gorm:"not null"`
+	LocationName     string    `json:"location_name" gorm:"size:255"` // Название места
+	Address          string    `json:"address" gorm:"type:text"`      // Полный адрес
+	City             string    `json:"city" gorm:"size:100"`          // Город
+	StartTime        time.Time `json:"start_time" gorm:"not null"`
+	EndTime          time.Time `json:"end_time" gorm:"not null"`
+	JoinMode         string    `json:"join_mode" gorm:"not null;default:'free'"` // 'free' или 'approval'
+	MinParticipants  int       `json:"min_participants" gorm:"default:1"`
+	MaxParticipants  int       `json:"max_participants" gorm:"default:50"`
+	EventType        string    `json:"event_type" gorm:"size:50;default:'environmental'"` // Тип события
+	Difficulty       string    `json:"difficulty" gorm:"size:20;default:'easy'"`          // Сложность
+	WeatherDependent bool      `json:"weather_dependent" gorm:"default:false"`            // Зависит от погоды
+	Requirements     string    `json:"requirements" gorm:"type:text"`                     // Требования к участникам
+	WhatToBring      string    `json:"what_to_bring" gorm:"type:text"`                    // Что взять с собой
+	ContactInfo      string    `json:"contact_info" gorm:"type:text"`                     // Контактная информация
+	IsActive         bool      `json:"is_active" gorm:"default:true"`
+	IsPublic         bool      `json:"is_public" gorm:"default:true"`     // Публичное событие
+	IsRecurring      bool      `json:"is_recurring" gorm:"default:false"` // Повторяющееся событие
+	RecurringPattern string    `json:"recurring_pattern" gorm:"size:50"`  // Паттерн повторения
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 
 	// Связи
 	Creator      User               `json:"creator" gorm:"foreignKey:CreatorID"`
@@ -208,6 +208,10 @@ const (
 	RecurringPatternWeekly  = "weekly"
 	RecurringPatternMonthly = "monthly"
 	RecurringPatternYearly  = "yearly"
+
+	// Режимы вступления
+	JoinModeFree     = "free"
+	JoinModeApproval = "approval"
 )
 
 // GetComplaintReasons возвращает список доступных причин жалоб
@@ -252,6 +256,14 @@ func GetRecurringPatterns() map[string]string {
 		RecurringPatternWeekly:  "Еженедельно",
 		RecurringPatternMonthly: "Ежемесячно",
 		RecurringPatternYearly:  "Ежегодно",
+	}
+}
+
+// GetJoinModes возвращает список доступных режимов вступления
+func GetJoinModes() map[string]string {
+	return map[string]string{
+		JoinModeFree:     "Свободное",
+		JoinModeApproval: "По одобрению",
 	}
 }
 

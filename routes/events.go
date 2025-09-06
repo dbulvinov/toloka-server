@@ -36,17 +36,18 @@ func SetupEventRoutes(app *fiber.App, eventController *controllers.EventControll
 		})
 	})
 
-	// Группа маршрутов для метаданных событий (должна быть перед параметрическими маршрутами)
-	metadata := app.Group("/events/metadata")
-
+	// Маршруты для метаданных событий (должны быть перед параметрическими маршрутами)
 	// GET /events/metadata/types - получить типы событий
-	metadata.Get("/types", eventController.GetEventTypes)
+	events.Get("/metadata/types", eventController.GetEventTypes)
 
 	// GET /events/metadata/difficulty - получить уровни сложности
-	metadata.Get("/difficulty", eventController.GetDifficultyLevels)
+	events.Get("/metadata/difficulty", eventController.GetDifficultyLevels)
 
 	// GET /events/metadata/recurring - получить паттерны повторения
-	metadata.Get("/recurring", eventController.GetRecurringPatterns)
+	events.Get("/metadata/recurring", eventController.GetRecurringPatterns)
+
+	// GET /events/metadata/join-modes - получить режимы вступления
+	events.Get("/metadata/join-modes", eventController.GetJoinModes)
 
 	// GET /events/:id - получить детали ивента (публичный доступ)
 	events.Get("/:id", eventController.GetEvent)
