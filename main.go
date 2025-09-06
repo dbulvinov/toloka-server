@@ -81,6 +81,7 @@ func main() {
 	participantController := controllers.NewParticipantController(db)
 	ratingController := controllers.NewRatingController(db)
 	complaintController := controllers.NewComplaintController(db)
+	dashboardController := controllers.NewDashboardController(db)
 
 	// Настройка маршрутов
 	routes.SetupAuthRoutes(app, authController)
@@ -96,6 +97,7 @@ func main() {
 	routes.SetupParticipantRoutes(app, participantController)
 	routes.SetupRatingRoutes(app, ratingController)
 	routes.SetupComplaintRoutes(app, complaintController)
+	routes.SetupDashboardRoutes(app, dashboardController)
 
 	// Настройка маршрутов для модуля сообщений
 	routes.SetupConversationRoutes(app, db)
